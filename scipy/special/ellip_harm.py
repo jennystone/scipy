@@ -1,6 +1,6 @@
 from __future__ import division, print_function, absolute_import
-from ._ufuncs import _ellip_harm, _ellip_norm
-from ._ellip_harm_2 import _ellipsoid
+from ._ufuncs import _ellip_harm
+from ._ellipsoid_harm import ellip_harm_2, ellip_norm
 import threading
 import numpy as np
 
@@ -173,4 +173,5 @@ def ellip_normal(h2, k2, n, p):
     >>> 1723.38796997
 
     """
-    return _ellip_norm(h2, k2, n, p)
+    with _ellip_lock:
+        return _ellipsoid_norm(h2, k2, n, p)

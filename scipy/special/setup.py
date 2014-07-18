@@ -98,8 +98,8 @@ def configuration(parent_package='',top_path=None):
                          define_macros=define_macros,
                          extra_info=get_info("npymath"))
 
-    config.add_extension('_ellip_harm_2',
-                         sources=['_ellip_harm_2.c', '_ufuncs.c',
+    config.add_extension('_ellipsoid_harm',
+                         sources=['_ellipsoid_harm.c', '_ufuncs.c',
                                   'Faddeeva.cc','sf_error.c','_logit.c.src',"cdf_wrappers.c",
                                   "specfun_wrappers.c","amos_wrappers.c"],
                          **cfg
