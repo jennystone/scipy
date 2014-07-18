@@ -1,7 +1,7 @@
 import threading
 import ctypes
 from _complexstuff cimport *
-from libc.math cimport sqrt
+from libc.math cimport sqrt, fabs
 import scipy.integrate
 
 cdef double _global_h2, _global_k2
@@ -147,8 +147,8 @@ def _ellipsoid_norm(double h2, double k2, int n, int p):
     res3, err3 = scipy.integrate.quad(_F_integrand4_ctypes, 0, h,
                                     epsabs=1e-08, epsrel=1e-15, weight="alg", wvar=(0, -0.5))
     error = 8*(res2*err1 + err2*res1 + res*err3 + res3*err)
-    if  error > 10e-8:
+    result = 8*(res1*res2 - res*res3)
+    if  error > 1e-8*fabs(result):
         return nan 
-
-    return 8*(res1*res2 - res*res3)
+    return result 
 
