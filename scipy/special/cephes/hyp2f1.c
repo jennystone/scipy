@@ -69,7 +69,7 @@
 
 #include <stdlib.h>
 #include "mconf.h"
-
+#include <c_misc/misc.h>
 #ifdef DEC
 #define EPS 1.0e-14
 #define EPS2 1.0e-11
@@ -226,7 +226,7 @@ double a, b, c, x;
 	    }
 	    if (d <= 0.0)
 		goto hypdiv;
-	    y = gamma(c) * gamma(d) / (gamma(p) * gamma(r));
+	    y = poch(p, a)*poch(r, -a);
 	    goto hypdon;
 	}
 	if (d <= -1.0)
