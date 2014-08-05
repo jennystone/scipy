@@ -541,7 +541,7 @@ double *loss;			/* estimates loss of significance */
     while (s == 0 || fabs(u / s) > prec);
 
     /* return estimated relative error */
-    *loss = (prec * umax) / fabs(s) + (prec * i);
+    *loss = (MACHEP * umax) / fabs(s) + (MACHEP * i);
 
     return (s);
 }
