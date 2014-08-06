@@ -334,7 +334,7 @@ cdef void loop_i_d_DDDD_As_f_FFFF(char **args, np.npy_intp *dims, np.npy_intp *s
         op3 += steps[4]
     sf_error.check_fpe(func_name)
 
-cdef void loop_i_D_DDDD_As_F_FFFF(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
+cdef void loop_i_d_dddd_As_f_ffff(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
     cdef np.npy_intp i, n = dims[0]
     cdef void *func = (<void**>data)[0]
     cdef char *func_name = <char*>(<void**>data)[1]
@@ -343,16 +343,16 @@ cdef void loop_i_D_DDDD_As_F_FFFF(char **args, np.npy_intp *dims, np.npy_intp *s
     cdef char *op1 = args[2]
     cdef char *op2 = args[3]
     cdef char *op3 = args[4]
-    cdef double complex ov0
-    cdef double complex ov1
-    cdef double complex ov2
-    cdef double complex ov3
+    cdef double ov0
+    cdef double ov1
+    cdef double ov2
+    cdef double ov3
     for i in range(n):
-        (<int(*)(double complex, double complex *, double complex *, double complex *, double complex *) nogil>func)(<double complex>(<float complex*>ip0)[0], &ov0, &ov1, &ov2, &ov3)
-        (<float complex *>op0)[0] = <float complex>ov0
-        (<float complex *>op1)[0] = <float complex>ov1
-        (<float complex *>op2)[0] = <float complex>ov2
-        (<float complex *>op3)[0] = <float complex>ov3
+        (<int(*)(double, double *, double *, double *, double *) nogil>func)(<double>(<float*>ip0)[0], &ov0, &ov1, &ov2, &ov3)
+        (<float *>op0)[0] = <float>ov0
+        (<float *>op1)[0] = <float>ov1
+        (<float *>op2)[0] = <float>ov2
+        (<float *>op3)[0] = <float>ov3
         ip0 += steps[0]
         op0 += steps[1]
         op1 += steps[2]
@@ -489,6 +489,32 @@ cdef void loop_i_dd_dd_As_dd_dd(char **args, np.npy_intp *dims, np.npy_intp *ste
         op1 += steps[3]
     sf_error.check_fpe(func_name)
 
+cdef void loop_i_D_DDDD_As_F_FFFF(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
+    cdef np.npy_intp i, n = dims[0]
+    cdef void *func = (<void**>data)[0]
+    cdef char *func_name = <char*>(<void**>data)[1]
+    cdef char *ip0 = args[0]
+    cdef char *op0 = args[1]
+    cdef char *op1 = args[2]
+    cdef char *op2 = args[3]
+    cdef char *op3 = args[4]
+    cdef double complex ov0
+    cdef double complex ov1
+    cdef double complex ov2
+    cdef double complex ov3
+    for i in range(n):
+        (<int(*)(double complex, double complex *, double complex *, double complex *, double complex *) nogil>func)(<double complex>(<float complex*>ip0)[0], &ov0, &ov1, &ov2, &ov3)
+        (<float complex *>op0)[0] = <float complex>ov0
+        (<float complex *>op1)[0] = <float complex>ov1
+        (<float complex *>op2)[0] = <float complex>ov2
+        (<float complex *>op3)[0] = <float complex>ov3
+        ip0 += steps[0]
+        op0 += steps[1]
+        op1 += steps[2]
+        op2 += steps[3]
+        op3 += steps[4]
+    sf_error.check_fpe(func_name)
+
 cdef void loop_i_ddd_dd_As_fff_ff(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
     cdef np.npy_intp i, n = dims[0]
     cdef void *func = (<void**>data)[0]
@@ -529,7 +555,7 @@ cdef void loop_D_ddD__As_ddD_D(char **args, np.npy_intp *dims, np.npy_intp *step
         op0 += steps[3]
     sf_error.check_fpe(func_name)
 
-cdef void loop_D_dddD__As_dddD_D(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
+cdef void loop_d_dddd__As_dddd_d(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
     cdef np.npy_intp i, n = dims[0]
     cdef void *func = (<void**>data)[0]
     cdef char *func_name = <char*>(<void**>data)[1]
@@ -538,10 +564,10 @@ cdef void loop_D_dddD__As_dddD_D(char **args, np.npy_intp *dims, np.npy_intp *st
     cdef char *ip2 = args[2]
     cdef char *ip3 = args[3]
     cdef char *op0 = args[4]
-    cdef double complex ov0
+    cdef double ov0
     for i in range(n):
-        ov0 = (<double complex(*)(double, double, double, double complex) nogil>func)(<double>(<double*>ip0)[0], <double>(<double*>ip1)[0], <double>(<double*>ip2)[0], <double complex>(<double complex*>ip3)[0])
-        (<double complex *>op0)[0] = <double complex>ov0
+        ov0 = (<double(*)(double, double, double, double) nogil>func)(<double>(<double*>ip0)[0], <double>(<double*>ip1)[0], <double>(<double*>ip2)[0], <double>(<double*>ip3)[0])
+        (<double *>op0)[0] = <double>ov0
         ip0 += steps[0]
         ip1 += steps[1]
         ip2 += steps[2]
@@ -748,26 +774,6 @@ cdef void loop_i_dd_dd_As_ff_ff(char **args, np.npy_intp *dims, np.npy_intp *ste
         op1 += steps[3]
     sf_error.check_fpe(func_name)
 
-cdef void loop_D_dddD__As_fffF_F(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
-    cdef np.npy_intp i, n = dims[0]
-    cdef void *func = (<void**>data)[0]
-    cdef char *func_name = <char*>(<void**>data)[1]
-    cdef char *ip0 = args[0]
-    cdef char *ip1 = args[1]
-    cdef char *ip2 = args[2]
-    cdef char *ip3 = args[3]
-    cdef char *op0 = args[4]
-    cdef double complex ov0
-    for i in range(n):
-        ov0 = (<double complex(*)(double, double, double, double complex) nogil>func)(<double>(<float*>ip0)[0], <double>(<float*>ip1)[0], <double>(<float*>ip2)[0], <double complex>(<float complex*>ip3)[0])
-        (<float complex *>op0)[0] = <float complex>ov0
-        ip0 += steps[0]
-        ip1 += steps[1]
-        ip2 += steps[2]
-        ip3 += steps[3]
-        op0 += steps[4]
-    sf_error.check_fpe(func_name)
-
 cdef void loop_d_id__As_lf_f(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
     cdef np.npy_intp i, n = dims[0]
     cdef void *func = (<void**>data)[0]
@@ -788,7 +794,7 @@ cdef void loop_d_id__As_lf_f(char **args, np.npy_intp *dims, np.npy_intp *steps,
         op0 += steps[2]
     sf_error.check_fpe(func_name)
 
-cdef void loop_d_dddd__As_dddd_d(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
+cdef void loop_D_dddD__As_dddD_D(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
     cdef np.npy_intp i, n = dims[0]
     cdef void *func = (<void**>data)[0]
     cdef char *func_name = <char*>(<void**>data)[1]
@@ -797,10 +803,10 @@ cdef void loop_d_dddd__As_dddd_d(char **args, np.npy_intp *dims, np.npy_intp *st
     cdef char *ip2 = args[2]
     cdef char *ip3 = args[3]
     cdef char *op0 = args[4]
-    cdef double ov0
+    cdef double complex ov0
     for i in range(n):
-        ov0 = (<double(*)(double, double, double, double) nogil>func)(<double>(<double*>ip0)[0], <double>(<double*>ip1)[0], <double>(<double*>ip2)[0], <double>(<double*>ip3)[0])
-        (<double *>op0)[0] = <double>ov0
+        ov0 = (<double complex(*)(double, double, double, double complex) nogil>func)(<double>(<double*>ip0)[0], <double>(<double*>ip1)[0], <double>(<double*>ip2)[0], <double complex>(<double complex*>ip3)[0])
+        (<double complex *>op0)[0] = <double complex>ov0
         ip0 += steps[0]
         ip1 += steps[1]
         ip2 += steps[2]
@@ -1000,30 +1006,24 @@ cdef void loop_D_ddD__As_ffF_F(char **args, np.npy_intp *dims, np.npy_intp *step
         op0 += steps[3]
     sf_error.check_fpe(func_name)
 
-cdef void loop_i_d_dddd_As_f_ffff(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
+cdef void loop_D_dddD__As_fffF_F(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
     cdef np.npy_intp i, n = dims[0]
     cdef void *func = (<void**>data)[0]
     cdef char *func_name = <char*>(<void**>data)[1]
     cdef char *ip0 = args[0]
-    cdef char *op0 = args[1]
-    cdef char *op1 = args[2]
-    cdef char *op2 = args[3]
-    cdef char *op3 = args[4]
-    cdef double ov0
-    cdef double ov1
-    cdef double ov2
-    cdef double ov3
+    cdef char *ip1 = args[1]
+    cdef char *ip2 = args[2]
+    cdef char *ip3 = args[3]
+    cdef char *op0 = args[4]
+    cdef double complex ov0
     for i in range(n):
-        (<int(*)(double, double *, double *, double *, double *) nogil>func)(<double>(<float*>ip0)[0], &ov0, &ov1, &ov2, &ov3)
-        (<float *>op0)[0] = <float>ov0
-        (<float *>op1)[0] = <float>ov1
-        (<float *>op2)[0] = <float>ov2
-        (<float *>op3)[0] = <float>ov3
+        ov0 = (<double complex(*)(double, double, double, double complex) nogil>func)(<double>(<float*>ip0)[0], <double>(<float*>ip1)[0], <double>(<float*>ip2)[0], <double complex>(<float complex*>ip3)[0])
+        (<float complex *>op0)[0] = <float complex>ov0
         ip0 += steps[0]
-        op0 += steps[1]
-        op1 += steps[2]
-        op2 += steps[3]
-        op3 += steps[4]
+        ip1 += steps[1]
+        ip2 += steps[2]
+        ip3 += steps[3]
+        op0 += steps[4]
     sf_error.check_fpe(func_name)
 
 cdef void loop_d_lddd__As_lfff_f(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
@@ -1419,6 +1419,9 @@ cdef extern from "_ufuncs_defs.h":
     cdef double _func_cdfchn4_wrap "cdfchn4_wrap"(double, double, double) nogil
 cdef extern from "_ufuncs_defs.h":
     cdef double _func_cdfchn2_wrap "cdfchn2_wrap"(double, double, double) nogil
+from hypc cimport chyp2f1 as _func_chyp2f1
+ctypedef double complex _proto_chyp2f1_t(double, double, double, double complex) nogil
+cdef _proto_chyp2f1_t *_proto_chyp2f1_t_var = &_func_chyp2f1
 cdef extern from "_ufuncs_defs.h":
     cdef double _func_cosdg "cosdg"(double) nogil
 cdef extern from "_ufuncs_defs.h":
@@ -3135,6 +3138,32 @@ ufunc_chndtrix_ptr[2*1+1] = <void*>(<char*>"chndtrix")
 ufunc_chndtrix_data[0] = &ufunc_chndtrix_ptr[2*0]
 ufunc_chndtrix_data[1] = &ufunc_chndtrix_ptr[2*1]
 chndtrix = np.PyUFunc_FromFuncAndData(ufunc_chndtrix_loops, ufunc_chndtrix_data, ufunc_chndtrix_types, 2, 3, 1, 0, "chndtrix", ufunc_chndtrix_doc, 0)
+
+cdef np.PyUFuncGenericFunction ufunc_chyp2f1_loops[2]
+cdef void *ufunc_chyp2f1_ptr[4]
+cdef void *ufunc_chyp2f1_data[2]
+cdef char ufunc_chyp2f1_types[10]
+cdef char *ufunc_chyp2f1_doc = (
+    "Internal function, use `lambertw` instead.")
+ufunc_chyp2f1_loops[0] = <np.PyUFuncGenericFunction>loop_D_dddD__As_fffF_F
+ufunc_chyp2f1_loops[1] = <np.PyUFuncGenericFunction>loop_D_dddD__As_dddD_D
+ufunc_chyp2f1_types[0] = <char>NPY_FLOAT
+ufunc_chyp2f1_types[1] = <char>NPY_FLOAT
+ufunc_chyp2f1_types[2] = <char>NPY_FLOAT
+ufunc_chyp2f1_types[3] = <char>NPY_CFLOAT
+ufunc_chyp2f1_types[4] = <char>NPY_CFLOAT
+ufunc_chyp2f1_types[5] = <char>NPY_DOUBLE
+ufunc_chyp2f1_types[6] = <char>NPY_DOUBLE
+ufunc_chyp2f1_types[7] = <char>NPY_DOUBLE
+ufunc_chyp2f1_types[8] = <char>NPY_CDOUBLE
+ufunc_chyp2f1_types[9] = <char>NPY_CDOUBLE
+ufunc_chyp2f1_ptr[2*0] = <void*>_func_chyp2f1
+ufunc_chyp2f1_ptr[2*0+1] = <void*>(<char*>"chyp2f1")
+ufunc_chyp2f1_ptr[2*1] = <void*>_func_chyp2f1
+ufunc_chyp2f1_ptr[2*1+1] = <void*>(<char*>"chyp2f1")
+ufunc_chyp2f1_data[0] = &ufunc_chyp2f1_ptr[2*0]
+ufunc_chyp2f1_data[1] = &ufunc_chyp2f1_ptr[2*1]
+chyp2f1 = np.PyUFunc_FromFuncAndData(ufunc_chyp2f1_loops, ufunc_chyp2f1_data, ufunc_chyp2f1_types, 2, 4, 1, 0, "chyp2f1", ufunc_chyp2f1_doc, 0)
 
 cdef np.PyUFuncGenericFunction ufunc_cosdg_loops[2]
 cdef void *ufunc_cosdg_ptr[4]
@@ -7840,7 +7869,7 @@ cdef char *ufunc_obl_ang1_doc = (
     "\n"
     "Oblate spheroidal angular function of the first kind and its derivative\n"
     "\n"
-    "Computes the oblate sheroidal angular function of the first kind\n"
+    "Computes the oblate spheroidal angular function of the first kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``.\n"
     "\n"
@@ -7879,9 +7908,9 @@ cdef char ufunc_obl_ang1_cv_types[14]
 cdef char *ufunc_obl_ang1_cv_doc = (
     "obl_ang1_cv(m, n, c, cv, x)\n"
     "\n"
-    "Oblate sheroidal angular function obl_ang1 for precomputed characteristic value\n"
+    "Oblate spheroidal angular function obl_ang1 for precomputed characteristic value\n"
     "\n"
-    "Computes the oblate sheroidal angular function of the first kind\n"
+    "Computes the oblate spheroidal angular function of the first kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``. Requires\n"
     "pre-computed characteristic value.\n"
@@ -7954,7 +7983,7 @@ cdef char *ufunc_obl_rad1_doc = (
     "\n"
     "Oblate spheroidal radial function of the first kind and its derivative\n"
     "\n"
-    "Computes the oblate sheroidal radial function of the first kind\n"
+    "Computes the oblate spheroidal radial function of the first kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``.\n"
     "\n"
@@ -7993,9 +8022,9 @@ cdef char ufunc_obl_rad1_cv_types[14]
 cdef char *ufunc_obl_rad1_cv_doc = (
     "obl_rad1_cv(m,n,c,cv,x)\n"
     "\n"
-    "Oblate sheroidal radial function obl_rad1 for precomputed characteristic value\n"
+    "Oblate spheroidal radial function obl_rad1 for precomputed characteristic value\n"
     "\n"
-    "Computes the oblate sheroidal radial function of the first kind\n"
+    "Computes the oblate spheroidal radial function of the first kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``. Requires\n"
     "pre-computed characteristic value.\n"
@@ -8039,7 +8068,7 @@ cdef char *ufunc_obl_rad2_doc = (
     "\n"
     "Oblate spheroidal radial function of the second kind and its derivative.\n"
     "\n"
-    "Computes the oblate sheroidal radial function of the second kind\n"
+    "Computes the oblate spheroidal radial function of the second kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``.\n"
     "\n"
@@ -8078,9 +8107,9 @@ cdef char ufunc_obl_rad2_cv_types[14]
 cdef char *ufunc_obl_rad2_cv_doc = (
     "obl_rad2_cv(m,n,c,cv,x)\n"
     "\n"
-    "Oblate sheroidal radial function obl_rad2 for precomputed characteristic value\n"
+    "Oblate spheroidal radial function obl_rad2 for precomputed characteristic value\n"
     "\n"
-    "Computes the oblate sheroidal radial function of the second kind\n"
+    "Computes the oblate spheroidal radial function of the second kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``. Requires\n"
     "pre-computed characteristic value.\n"
@@ -8421,7 +8450,7 @@ cdef char *ufunc_pro_ang1_doc = (
     "\n"
     "Prolate spheroidal angular function of the first kind and its derivative\n"
     "\n"
-    "Computes the prolate sheroidal angular function of the first kind\n"
+    "Computes the prolate spheroidal angular function of the first kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``.\n"
     "\n"
@@ -8460,9 +8489,9 @@ cdef char ufunc_pro_ang1_cv_types[14]
 cdef char *ufunc_pro_ang1_cv_doc = (
     "pro_ang1_cv(m,n,c,cv,x)\n"
     "\n"
-    "Prolate sheroidal angular function pro_ang1 for precomputed characteristic value\n"
+    "Prolate spheroidal angular function pro_ang1 for precomputed characteristic value\n"
     "\n"
-    "Computes the prolate sheroidal angular function of the first kind\n"
+    "Computes the prolate spheroidal angular function of the first kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``. Requires\n"
     "pre-computed characteristic value.\n"
@@ -8535,7 +8564,7 @@ cdef char *ufunc_pro_rad1_doc = (
     "\n"
     "Prolate spheroidal radial function of the first kind and its derivative\n"
     "\n"
-    "Computes the prolate sheroidal radial function of the first kind\n"
+    "Computes the prolate spheroidal radial function of the first kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``.\n"
     "\n"
@@ -8574,9 +8603,9 @@ cdef char ufunc_pro_rad1_cv_types[14]
 cdef char *ufunc_pro_rad1_cv_doc = (
     "pro_rad1_cv(m,n,c,cv,x)\n"
     "\n"
-    "Prolate sheroidal radial function pro_rad1 for precomputed characteristic value\n"
+    "Prolate spheroidal radial function pro_rad1 for precomputed characteristic value\n"
     "\n"
-    "Computes the prolate sheroidal radial function of the first kind\n"
+    "Computes the prolate spheroidal radial function of the first kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``. Requires\n"
     "pre-computed characteristic value.\n"
@@ -8620,7 +8649,7 @@ cdef char *ufunc_pro_rad2_doc = (
     "\n"
     "Prolate spheroidal radial function of the secon kind and its derivative\n"
     "\n"
-    "Computes the prolate sheroidal radial function of the second kind\n"
+    "Computes the prolate spheroidal radial function of the second kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and |x|<1.0.\n"
     "\n"
@@ -8659,9 +8688,9 @@ cdef char ufunc_pro_rad2_cv_types[14]
 cdef char *ufunc_pro_rad2_cv_doc = (
     "pro_rad2_cv(m,n,c,cv,x)\n"
     "\n"
-    "Prolate sheroidal radial function pro_rad2 for precomputed characteristic value\n"
+    "Prolate spheroidal radial function pro_rad2 for precomputed characteristic value\n"
     "\n"
-    "Computes the prolate sheroidal radial function of the second kind\n"
+    "Computes the prolate spheroidal radial function of the second kind\n"
     "and its derivative (with respect to x) for mode parameters m>=0\n"
     "and n>=m, spheroidal parameter c and ``|x| < 1.0``. Requires\n"
     "pre-computed characteristic value.\n"

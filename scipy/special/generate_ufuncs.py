@@ -96,6 +96,7 @@ fdtr -- fdtr: ddd->d                                       -- cephes.h
 fdtri -- fdtri: ddd->d                                     -- cephes.h
 gdtrc -- gdtrc: ddd->d                                     -- cephes.h
 gdtr -- gdtr: ddd->d                                       -- cephes.h
+chyp2f1 -- chyp2f1: dddD->D                                -- hypc.pxd
 hyp2f1 -- hyp2f1: dddd->d, chyp2f1_wrap: dddD->D           -- cephes.h, specfun_wrappers.h
 hyp1f1 -- hyp1f1_wrap: ddd->d, chyp1f1_wrap: ddD->D        -- specfun_wrappers.h
 hyperu -- hypU_wrap: ddd->d                                -- specfun_wrappers.h

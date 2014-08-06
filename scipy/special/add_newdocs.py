@@ -62,6 +62,11 @@ add_newdoc("scipy.special", "_lambertw",
     Internal function, use `lambertw` instead.
     """)
 
+add_newdoc("scipy.special", "chyp2f1",
+    """
+    Gaussian Hypergeometric functions for complex x
+    """)
+
 add_newdoc("scipy.special", "airy",
     """
     airy(z)
