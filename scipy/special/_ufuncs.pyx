@@ -3144,7 +3144,7 @@ cdef void *ufunc_chyp2f1_ptr[4]
 cdef void *ufunc_chyp2f1_data[2]
 cdef char ufunc_chyp2f1_types[10]
 cdef char *ufunc_chyp2f1_doc = (
-    "Internal function, use `lambertw` instead.")
+    "Gaussian Hypergeometric functions for complex x")
 ufunc_chyp2f1_loops[0] = <np.PyUFuncGenericFunction>loop_D_dddD__As_fffF_F
 ufunc_chyp2f1_loops[1] = <np.PyUFuncGenericFunction>loop_D_dddD__As_dddD_D
 ufunc_chyp2f1_types[0] = <char>NPY_FLOAT

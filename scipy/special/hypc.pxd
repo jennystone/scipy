@@ -122,15 +122,20 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
         return cpow(s, -b)
 
     if ax > 1.0:
-        mab = <int> (a - b + EPS*((a - b)/fabs(a - b)))
+        EPS = 10**-8
+        if a != b:
+            mab = <int> (a - b + EPS*((a - b)/fabs(a - b)))
+        else:
+            mab = <int> (a - b)
         if (fabs(a - b - mab) < EPS) and (ax < 1.1):
             b += EPS
         if fabs(a - b - mab) > EPS:
-            term1 = Gamma(c)*Gamma(b - a)/(Gamma(p)*Gamma(b)*(-x)**a)
-            term2 = Gamma(c)*Gamma(a - b)/(Gamma(r)*Gamma(a)*(-x)**b)
+            term1 = Gamma(c)*Gamma(b - a)/(Gamma(p)*Gamma(b)*cpow(-x, a))
+            term2 = Gamma(c)*Gamma(a - b)/(Gamma(r)*Gamma(a)*cpow(-x, b))
             sum = term1 + term2
             m = 1
-            while (y==0 or cabs(u/sum) > MACHEP):
+            u = sum
+            while (cabs(u/sum) > EPS):
                 term1*=(a + m - 1.0)*(-p + 1.0)/((a - b + m)*m*x)
                 term2*=(b + m - 1.0)*(-r + 1.0)/((b - a + m)*m*x)
                 sum += term1 + term2
@@ -138,37 +143,38 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
                 m += 1
                 if  m > MAX_ITER:
                     return sum
+            return sum
         else:
             if a-b < 0:
                 a, b = b, a
             nca = <int> (p + EPS*p/fabs(p))
             ncb = <int> (r + EPS*r/fabs(r))
-            if fabs(p - nca) < EPS or fabs(r - ncb) < EPS:
-                c += EPS
+            #if fabs(p - nca) < EPS or fabs(r - ncb) < EPS:
+            c += EPS
+
             mab = <int>(a - b + EPS)
-            term1 = Gamma(c)/(Gamma(a)*(-x)**b)
+            term1 = Gamma(c)/(Gamma(a)*cpow(-x, b))
             sum = Gamma(a - b)/Gamma(r)*term1
             for i in range(1, mab):
-               term1*=(b + i -1)/(i*x)
+               term1*=(b + i -1.0)/(i*x)
                sum += term1*Gamma(a - b - i)/Gamma(r - i)
+
             if mab == 0:
                sum = 0
             term2 = Gamma(c)/(Gamma(a)*Gamma(r)*(-x)**a)
-            term3 = -2*EL-psi(a)-psi(p)
-            term4 = 1
+            term3 = -2.0*EL-psi(a)-psi(p)
             for i in range(1,mab+1):
-                term4 *= (b + i - 1)*(b - c - i)/i
-            sum1 = term4*(term3 + clog(-x))
-            sum2 =0
-            for i in range(1, mab+1):
-                sum2 *= (b + i - 1)*(b - c + i)/i
-            term5 = (sum2*sum1)*term2
+                term3 += 1.0/i
+            term4 = 1.0
+            for i in range(1,mab+1):
+                term4 *= (b + i - 1.0)*(b - c + i)/i
+            sum1 = term4*(term3 + clog(-x))*term2
             term6 = 1
-            sum3 = 0
-            sum4 = 0
-            for i in range(MAX_ITER):
+            sum3 = 0.0
+            sum4 = 0.0
+            for i in range(1, MAX_ITER):
                 term2 = term2/x
-                term6 *= (b + i - 1.0)*(b + c+ i)/(i*i)
+                term6 *= (b + i - 1.0)*(b - c+ i)/(i*i)
                 term7 = term6
                 for j in range(i + 1, i+mab+1):
                     term7 *= (b + j -1.0)*( b - c + j)/j
@@ -176,9 +182,10 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
                 sum5 = sum3
                 for j in range(i + 1, i+mab+1):
                     sum5 += 1.0/j
+
                 sum6 = -2.0*EL-psi(a)-psi(-p)+sum5-1.0/(i-p)-pi/ctan(pi*(i-p))+clog(-x)
-                term5+=sum6*term2*term7
-            return term5 + sum
+                sum1+=sum6*term2*term7
+            return sum1 + sum
                 
     if d < 0.0:
         y = hys2f1(a, b, c, x, &err)
@@ -243,7 +250,7 @@ cdef inline double complex hys2f1(double a, double b, double c, double complex x
     prec = MACHEP
 
     if c < 0 and not(a < 0 or b < 0) and fabs( c - ic) > EPS: 
-        prec = pow(10,-150)
+        prec = pow(10,-700)
 
     while (s == 0 or cabs(u/s) > prec): 
         if fabs(h) < EPS:
