@@ -126,7 +126,7 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
         if a != b:
             mab = <int> (a - b + EPS*((a - b)/fabs(a - b)))
         else:
-            mab = <int> (a - b)
+            mab = <int> ((a - b) + EPS)
         if (fabs(a - b - mab) < EPS) and (ax < 1.1):
             b += EPS
         if fabs(a - b - mab) > EPS:
@@ -136,8 +136,8 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
             m = 1
             u = sum
             while (cabs(u/sum) > EPS):
-                term1*=(a + m - 1.0)*(-p + 1.0)/((a - b + m)*m*x)
-                term2*=(b + m - 1.0)*(-r + 1.0)/((b - a + m)*m*x)
+                term1*=(a + m - 1.0)*(-p + m)/((a - b + m)*m*x)
+                term2*=(b + m - 1.0)*(-r + m)/((b - a + m)*m*x)
                 sum += term1 + term2
                 u = term1 + term2
                 m += 1
