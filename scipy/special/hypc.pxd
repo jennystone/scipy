@@ -188,6 +188,23 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
             return sum1 + sum
                 
     if d < 0.0:
+        i = 0
+        if cimag(x) !=0:
+            sum1 = 1.0
+            if p < a and r < b:
+                sum1 = cpow(s,d)
+                a, p = p, a
+                b, r = r, b
+            sum = 1.0
+            term1 = 1.0
+            for i in range (1, 1500):
+                term1*= (a+i-1.0)*(b+i-1.0)/(i*(c+i-1.0))*x
+                sum += term1
+                if cabs(term1/sum) < EPS and i < 150 and not isnan(cabs(sum*sum1)):
+                    return sum*sum1
+            a, p = p, a
+            b, r = r, b
+        
         y = hys2f1(a, b, c, x, &err)
         if err < ETHRESH:
             return y
@@ -206,15 +223,19 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
             d2 = y
         if err > ETHRESH:
             sf_error.error("chyp2f1", sf_error.LOSS, "Loss of precision")
+            return nan
         return y
 
-
+            
     if neg_int_ca or neg_int_cb:
         y = cpow(s, d) * hys2f1(c - a, c - b, c, x, &err)
         if err > ETHRESH:
             sf_error.error("chyp2f1", sf_error.LOSS, "Loss of precision")
         return y
-
+    y = hys2f1(a, b, c, x, &err);
+    if err > ETHRESH:
+            sf_error.error("chyp2f1", sf_error.LOSS, "Loss of precision")
+    return y
 
   
 cdef inline double complex hys2f1(double a, double b, double c, double complex x, double *loss) nogil:
@@ -268,7 +289,7 @@ cdef inline double complex hys2f1(double a, double b, double c, double complex x
             loss[0] = 1.0
             return s
     loss[0] = (MACHEP * umax)/cabs(s) + (MACHEP*i)
-    return (s)
+    return s
 
 
 cdef inline double complex hyp2f1ra(double a, double b, double c, double complex x, double *loss) nogil:
