@@ -1,3 +1,7 @@
+#
+#Reimplementation of Gaussian Hypergeometric Functions for complex values of x
+#
+
 cimport sf_error
 
 cdef extern from "c_misc/misc.h":
@@ -60,7 +64,7 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
     if (b <= 0 and fabs(b - ib) < EPS):  #b is a negative integer
         neg_int_b = 1
 
-    if (c <= 0 and fabs(c - ic) < EPS):
+    if (c <= 0 and fabs(c - ic) < EPS):  #c is a negative integer
         neg_int_c = 1
 
     if neg_int_c and not (neg_int_a or neg_int_b):
@@ -72,7 +76,7 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
     r = c - b
     ib = <int>round(r)
    
-    if fabs(1 - creal(x)) < EPS and cimag(x) == 0.0:
+    if fabs(1 - creal(x)) < EPS and cimag(x) == 0.0: #when x == 1 + 0j
         if d < 0:
             return INFINITY
         if d > 0:
@@ -84,7 +88,7 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
     if ((ib <= 0.0) and (fabs(r - ib) < EPS)):
         neg_int_cb = 1
 
-    if neg_int_a or neg_int_b:
+    if neg_int_a or neg_int_b: # when either a or b is a negative integer
         if neg_int_a:
             max = <int>fabs(a)
         else:
@@ -112,45 +116,54 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
         for i in range(1, max+1):
             u *= (c-a+i-1.0)*(c-b+i-1.0)*x/(i*(c+i-1.0))
             sum += u
-        sum *= s**d
+        sum *= cpow(s, d)
         return sum
 
-    if fabs(b - c) < 10**-13:
+    if fabs(b - c) < EPS:
         return cpow(s, -a)
 
-    if fabs(a - c) < 10**-13:
+    if fabs(a - c) < EPS:
         return cpow(s, -b)
 
+    #when |x| > 1                
     if ax > 1.0:
-        EPS = 10**-8
+        EPS = 1.0e-8
         if a != b:
             mab = <int> (a - b + EPS*((a - b)/fabs(a - b)))
         else:
             mab = <int> ((a - b) + EPS)
-        if (fabs(a - b - mab) < EPS) and (ax < 1.1):
+        if (fabs(a - b - mab) < EPS) and (ax < 1.1): #if a - b is integral & |x|<1.1
             b += EPS
+            r = c - b
+
+        # Transformation when |x| > 1 and a-b is not integral
+        # Refer to FORTRAN implementation
+        # See Also: Eq 4.20 of Computation of Hypergeometric Functions by John Pearson
         if fabs(a - b - mab) > EPS:
             term1 = Gamma(c)*Gamma(b - a)/(Gamma(p)*Gamma(b)*cpow(-x, a))
             term2 = Gamma(c)*Gamma(a - b)/(Gamma(r)*Gamma(a)*cpow(-x, b))
-            sum = term1 + term2
+            sum = 0.0
             m = 1
             u = sum
-            while (cabs(u/sum) > EPS):
+            while m < MAX_ITER:
                 term1*=(a + m - 1.0)*(-p + m)/((a - b + m)*m*x)
                 term2*=(b + m - 1.0)*(-r + m)/((b - a + m)*m*x)
                 sum += term1 + term2
-                u = term1 + term2
                 m += 1
-                if  m > MAX_ITER:
+                if  sum == 0 or cabs(u/sum) > EPS:
                     return sum
+                u = term1 + term2
             return sum
+        # When |a-b| is integral 
+        # Refer to FORTRAN implementation
         else:
             if a-b < 0:
                 a, b = b, a
+                p, r = c - a, c - b
             nca = <int> (p + EPS*p/fabs(p))
             ncb = <int> (r + EPS*r/fabs(r))
-            #if fabs(p - nca) < EPS or fabs(r - ncb) < EPS:
-            c += EPS
+            if fabs(p - nca) < EPS or fabs(r - ncb) < EPS:
+                c += EPS
 
             mab = <int>(a - b + EPS)
             term1 = Gamma(c)/(Gamma(a)*cpow(-x, b))
@@ -161,7 +174,7 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
 
             if mab == 0:
                sum = 0
-            term2 = Gamma(c)/(Gamma(a)*Gamma(r)*(-x)**a)
+            term2 = Gamma(c)/(Gamma(a)*Gamma(r)*cpow(-x, a))
             term3 = -2.0*EL-psi(a)-psi(p)
             for i in range(1,mab+1):
                 term3 += 1.0/i
@@ -186,7 +199,7 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
                 sum6 = -2.0*EL-psi(a)-psi(-p)+sum5-1.0/(i-p)-pi/ctan(pi*(i-p))+clog(-x)
                 sum1+=sum6*term2*term7
             return sum1 + sum
-                
+
     if d < 0.0:
         i = 0
         if cimag(x) !=0:
@@ -200,11 +213,12 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
             for i in range (1, 1500):
                 term1*= (a+i-1.0)*(b+i-1.0)/(i*(c+i-1.0))*x
                 sum += term1
-                if cabs(term1/sum) < EPS and i < 150 and not isnan(cabs(sum*sum1)):
+                if cabs(term1/sum) < EPS and i < 150:
                     return sum*sum1
             a, p = p, a
             b, r = r, b
-        
+
+        # try Power series
         y = hys2f1(a, b, c, x, &err)
         if err < ETHRESH:
             return y
@@ -225,7 +239,6 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
             sf_error.error("chyp2f1", sf_error.LOSS, "Loss of precision")
             return nan
         return y
-
             
     if neg_int_ca or neg_int_cb:
         y = cpow(s, d) * hys2f1(c - a, c - b, c, x, &err)
@@ -237,7 +250,10 @@ cdef inline double complex chyp2f1(double a, double b, double c, double complex 
             sf_error.error("chyp2f1", sf_error.LOSS, "Loss of precision")
     return y
 
-  
+# Defining power series expansion of Gauss hypergeometric function 
+# Eq: 1.2 Numerically satisfactory solutions of hypergeometric recursions
+# http://www.ams.org/journals/mcom/2007-76-259/S0025-5718-07-01918-7/
+#
 cdef inline double complex hys2f1(double a, double b, double c, double complex x, double *loss) nogil:
     cdef double ETHRESH = 1.0e-12, EPS = 1.0e-13
     cdef int MAX_ITER = 10000
@@ -246,12 +262,14 @@ cdef inline double complex hys2f1(double a, double b, double c, double complex x
     cdef int i
     cdef int ib, ic, intflag = 0
 
+    # Ensure that |a| > |b|
     if fabs(b) > fabs(a):
         a, b = b, a
 
     ib = <int>round(b);
     ic = <int>round(c);
 
+    # except when `b` is a smaller negative integer
     if fabs(b - ib) < EPS and ib <= 0 and fabs(b) < fabs(a):
         a, b = b, a
         intflag = 1
@@ -271,8 +289,8 @@ cdef inline double complex hys2f1(double a, double b, double c, double complex x
     prec = MACHEP
 
     if c < 0 and not(a < 0 or b < 0) and fabs( c - ic) > EPS: 
-        prec = pow(10,-700)
-
+        prec = pow(10,-350)   #Increasing the precision
+ 
     while (s == 0 or cabs(u/s) > prec): 
         if fabs(h) < EPS:
             loss[0] = 1.0 
@@ -291,6 +309,13 @@ cdef inline double complex hys2f1(double a, double b, double c, double complex x
     loss[0] = (MACHEP * umax)/cabs(s) + (MACHEP*i)
     return s
 
+# Evaluate hypergeometric function by two-term recurrence in `a`.
+#
+# This avoids some of the loss of precision in the strongly alternating
+#  hypergeometric series, and can be used to reduce the `a` and `b` parameters
+# to smaller values.
+#
+# AMS55 #15.2.10
 
 cdef inline double complex hyp2f1ra(double a, double b, double c, double complex x, double *loss) nogil:
     cdef double complex f2, f1, f0
